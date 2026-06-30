@@ -12,9 +12,7 @@ export default defineConfig({
         name: "Carry",
         short_name: "Carry",
         display: "standalone",
-        // TODO: keep in sync with the --ink CSS variable once the prototype
-        // styles land; placeholder until then.
-        theme_color: "#1a1a1a",
+        theme_color: "#16182B",
         background_color: "#ffffff",
         start_url: "/",
       },

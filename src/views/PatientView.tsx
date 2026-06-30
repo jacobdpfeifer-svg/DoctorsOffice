@@ -160,6 +160,10 @@ export function PatientView() {
       sessionRef.current = null;
       setStep("done");
     } catch (err) {
+      if (sessionRef.current) {
+        endSession(sessionRef.current.channel);
+        sessionRef.current = null;
+      }
       setSendError(err instanceof Error ? err.message : String(err));
       setStep("code-entry");
     }

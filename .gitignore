@@ -1,14 +1,24 @@
-.env
-.env.local
+# Dependencies
 node_modules
+
+# Build output
 dist
 dist-ssr
+
+# TypeScript incremental build cache — never commit these
+*.tsbuildinfo
+
+# Environment files — .env.example IS committed; .env is not
+.env
+.env.local
 *.local
 
-.DS_Store
+# Logs
 *.log
 npm-debug.log*
 
+# OS / editor
+.DS_Store
 .vscode/*
 !.vscode/extensions.json
 .idea

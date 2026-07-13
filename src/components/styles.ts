@@ -1,6 +1,8 @@
+// Fonts are self-hosted via @fontsource/* packages imported in main.tsx.
+// @font-face declarations are injected into the document by Vite's CSS
+// pipeline before this runtime <style> tag renders, so font-family references
+// below resolve correctly without any @import here.
 export const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
 .lf{
   --ink:#16182B; --ink-soft:#3A3D55; --line:#E4E1D8; --line-2:#EEEBE3;
   --paper:#F4F2EC; --white:#FFFFFF; --cobalt:#2F49D1; --cobalt-ink:#1E2F8F;

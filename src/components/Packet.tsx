@@ -72,7 +72,8 @@ export function Packet({ packet, fresh, imported, elapsedMs, onImport }: Props) 
       ))}
 
       <div className="lf-packet-foot">
-        <Lock size={11} /> Arrived from the patient's device. No copy held by Carry.
+        <Lock size={11} /> Received end-to-end encrypted from the patient's device. Carry's relay
+        relayed ciphertext only — the plaintext arrived here first.
       </div>
     </article>
   );

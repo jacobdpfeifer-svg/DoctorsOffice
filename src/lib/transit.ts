@@ -160,11 +160,17 @@ const EncryptedBlobSchema = z.object({
     .regex(B64_RE, "ciphertext must be standard base64"),
 });
 
-/** Validated shape of a "desk-pubkey" or "patient-pubkey" payload. */
-const PubkeyFrameSchema = z.object({ pubkey: PubkeySchema });
+/**
+ * @internal Exported for unit tests only — not part of the public API.
+ * Validated shape of a "desk-pubkey" or "patient-pubkey" payload.
+ */
+export const PubkeyFrameSchema = z.object({ pubkey: PubkeySchema });
 
-/** Validated shape of a "packet" or "ack" payload. */
-const BlobFrameSchema = z.object({ blob: EncryptedBlobSchema });
+/**
+ * @internal Exported for unit tests only — not part of the public API.
+ * Validated shape of a "packet" or "ack" payload.
+ */
+export const BlobFrameSchema = z.object({ blob: EncryptedBlobSchema });
 
 // Type inferred by Zod so the rest of the code is fully typed.
 type ValidatedBlob = z.infer<typeof EncryptedBlobSchema>;
@@ -203,10 +209,12 @@ function frameLog(event: string, reason: string, issues?: z.ZodIssue[]): void {
 const PAIRING_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 /**
+ * @internal Exported for unit tests only — not part of the public API.
+ *
  * 256 / 32 = 8 exactly, so taking `byte % 32` is perfectly uniform —
  * no rejection sampling needed.
  */
-function generatePairingCode(): string {
+export function generatePairingCode(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(8));
   return Array.from(bytes, (b) => PAIRING_ALPHABET[b % PAIRING_ALPHABET.length]).join("");
 }

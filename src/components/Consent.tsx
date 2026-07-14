@@ -36,9 +36,14 @@ export function Consent({ office, profile, share, setShare, onBack, onSend }: Pr
               disabled={c.required || !has}
               onClick={() => toggle(c.id)}
               type="button"
+              role="switch"
+              aria-checked={on}
             >
-              <span className="lf-ctoggle-l"><Icon size={15} /> {c.label}</span>
-              <span className="lf-switch" data-on={String(on)}>
+              <span className="lf-ctoggle-l">
+                <Icon size={15} aria-hidden="true" /> {c.label}
+              </span>
+              {/* Visual knob is redundant with aria-checked — hide from AT */}
+              <span className="lf-switch" data-on={String(on)} aria-hidden="true">
                 <span className="lf-knob" />
               </span>
             </button>
@@ -47,7 +52,7 @@ export function Consent({ office, profile, share, setShare, onBack, onSend }: Pr
       </div>
 
       <div className="lf-priv">
-        <Lock size={12} /> End-to-end encrypted. The relay handles only ciphertext — cannot read what you share.
+        <Lock size={12} aria-hidden="true" /> End-to-end encrypted. The relay handles only ciphertext — cannot read what you share.
       </div>
 
       {/* Plain-language explainer — expandable so it doesn't crowd the consent flow */}

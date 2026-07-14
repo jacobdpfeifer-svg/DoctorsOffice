@@ -1,6 +1,6 @@
 import { Check, ShieldCheck, Lock, Pencil, ChevronRight } from "lucide-react";
 import type { Profile } from "../lib/types.ts";
-import { CATEGORIES, LABELS } from "./constants.ts";
+import { CATEGORIES } from "./constants.ts";
 
 interface Props {
   profile: Profile;
@@ -60,5 +60,3 @@ export function Review({ profile, returning, onEdit, onContinue }: Props) {
   );
 }
 
-// Keep LABELS in scope for any future use, suppress unused-import warning
-void LABELS;

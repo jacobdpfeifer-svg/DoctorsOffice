@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  ci:
+    name: Typecheck / Lint / Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Quality gates (run in parallel order so the fastest fail first) ──
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      # ── Optional: check that a production build completes ────────────────
+      # Uncomment when VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are set as
+      # repository secrets or environment variables.
+      #
+      # - name: Build
+      #   run: npm run build
+      #   env:
+      #     VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      #     VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}

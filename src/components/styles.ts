@@ -6,7 +6,9 @@ export const CSS = `
 .lf{
   --ink:#16182B; --ink-soft:#3A3D55; --line:#E4E1D8; --line-2:#EEEBE3;
   --paper:#F4F2EC; --white:#FFFFFF; --cobalt:#2F49D1; --cobalt-ink:#1E2F8F;
-  --jade:#15806B; --jade-soft:#E4F1EC; --clay:#B4421C; --mute:#8A8C9C;
+  --jade:#15806B; --jade-soft:#E4F1EC; --clay:#B4421C;
+  /* #6B6E82 on white ≈ 4.9:1 — passes WCAG AA for small text */
+  --mute:#6B6E82;
   --shadow:0 1px 2px rgba(22,24,43,.06), 0 12px 30px -16px rgba(22,24,43,.28);
   font-family:'Inter',system-ui,sans-serif; color:var(--ink);
   background:
@@ -233,6 +235,106 @@ export const CSS = `
 .lf-copy{ border:none; background:transparent; color:var(--mute); cursor:pointer; padding:4px; border-radius:6px; display:grid; place-items:center; transition:all .15s; }
 .lf-copy:hover{ background:#EAEDFB; color:var(--cobalt); }
 .lf-packet-foot{ display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--mute); margin-top:8px; padding-top:10px; border-top:1px solid var(--line-2); }
+
+/* ---- Accessibility ---- */
+
+/* Keyboard focus ring — visible on all interactive elements */
+.lf *:focus-visible{
+  outline:2px solid var(--cobalt); outline-offset:2px;
+  border-radius:4px; /* soften on rectangular elements */
+}
+
+/* Inline error message with non-color icon cue */
+.lf-field-error{
+  display:flex; align-items:center; gap:5px;
+  color:var(--clay); font-size:13px; font-weight:600; margin:0 0 12px;
+}
+.lf-field input[aria-invalid="true"]{ border-color:var(--clay); }
+
+/* ---- Mobile: strip the decorative phone chrome on real phones ---- */
+@media (max-width:430px){
+  /* Remove outer padding so the content fills the whole viewport */
+  .lf{ padding:0; }
+  /* Remove the plastic phone frame */
+  .lf-phone{
+    width:100%; border-radius:0; padding:0;
+    box-shadow:none; background:var(--paper);
+  }
+  /* Hide the decorative notch */
+  .lf-notch{ display:none; }
+  /* Screen fills the full viewport; content can scroll naturally */
+  .lf-screen{
+    border-radius:0; height:auto; min-height:100dvh;
+  }
+  /* Reduce top padding now that there is no notch */
+  .lf-ptop{ padding-top:max(14px,env(safe-area-inset-top)); }
+}
+
+/* sas-box — large cobalt monospace display used on both patient and desk SAS screens */
+.lf-sas-box{
+  font-family:'IBM Plex Mono',monospace; font-size:2.4rem; font-weight:700;
+  letter-spacing:0.18em; color:var(--cobalt); background:#EAEDFB;
+  border:2px solid #C4CCF4; border-radius:14px; padding:14px 24px;
+  text-align:center; margin:10px 0 14px;
+}
+
+/* code-display — large monospace pairing-code display (desk waiting screen) */
+.lf-code-display{
+  font-family:'IBM Plex Mono',monospace; font-size:2.2rem; font-weight:700;
+  letter-spacing:0.18em; color:var(--ink); margin:12px 0 4px;
+}
+
+/* verify-icon — 32 px cobalt circle at top of SAS confirm screen */
+.lf-verify-icon{
+  width:32px; height:32px; border-radius:50%;
+  background:#EAEDFB; display:grid; place-items:center;
+  color:var(--cobalt); flex-shrink:0;
+}
+
+/* warn-box — amber row callout for security warnings */
+.lf-warn-box{
+  display:flex; align-items:flex-start; gap:8px;
+  background:#FEF9EC; border:1px solid #FDE68A; border-radius:10px;
+  padding:10px 12px; margin-bottom:14px;
+}
+.lf-warn-box > svg{ color:#B45309; flex-shrink:0; margin-top:1px; }
+.lf-warn-box-text{ margin:0; font-size:11.5px; color:#78350F; line-height:1.5; }
+
+/* warn-ring — amber status ring for the "unconfirmed" state */
+.lf-warn-ring{
+  width:52px; height:52px; border-radius:50%;
+  background:#FEF9EC; border:2px solid #FDE68A;
+  display:grid; place-items:center; color:#B45309; flex-shrink:0;
+}
+
+/* lf-empty-ring modifiers used in desk status states */
+.lf-empty-ring--cobalt{ background:#EAEDFB; border-color:#C4CCF4; color:var(--cobalt); }
+.lf-empty-ring--error { background:#FEF2F2; border-color:#FECACA; color:#DC2626; }
+
+/* warn-title / warn-body — text for the "unconfirmed" state */
+.lf-warn-title{ font-weight:700; font-size:16px; text-align:center; margin:0; }
+.lf-warn-body{ font-size:13px; color:var(--mute); text-align:center; line-height:1.55; margin:0; max-width:280px; }
+
+/* warn-note — small advisory box without a leading icon */
+.lf-warn-note{ background:#FEF9EC; border:1px solid #FDE68A; border-radius:10px; padding:10px 14px; max-width:280px; }
+.lf-warn-note p{ margin:0; font-size:12px; color:#78350F; line-height:1.5; }
+
+/* signout — text button in the desk header */
+.lf-signout{
+  background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; gap:5px;
+  color:var(--mute); font-size:11.5px; font-weight:600;
+  font-family:inherit; padding:4px 6px; border-radius:7px;
+}
+
+/* empty-action — action button inside empty / status panels */
+.lf-empty-action{
+  margin-top:18px; border:none; border-radius:10px;
+  padding:10px 20px; font-family:inherit; font-weight:600; font-size:13px;
+  cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+}
+.lf-empty-action--cobalt{ background:var(--cobalt); color:#fff; }
+.lf-empty-action--dark  { background:var(--ink);    color:#fff; }
 
 @media (prefers-reduced-motion: reduce){
   .lf *{ animation:none !important; transition:none !important; }

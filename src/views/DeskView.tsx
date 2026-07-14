@@ -12,6 +12,7 @@ import { SESSION_TIMEOUT_MS } from "../lib/session-config.ts";
 import { getSupabase } from "../lib/supabase.ts";
 import { useAuth } from "../context/AuthContext.tsx";
 import type { ConsentedPacket } from "../lib/types.ts";
+import { OfficeNotFound } from "../components/OfficeNotFound.tsx";
 import { Packet } from "../components/Packet.tsx";
 import { CSS } from "../components/styles.ts";
 
@@ -165,7 +166,6 @@ export function DeskView() {
     };
   // restartKey is intentionally included: incrementing it triggers a full
   // effect teardown + re-run, starting a fresh session without a page reload.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officeId, office, membership, restartKey]);
 
   // --- Render helpers -----------------------------------------------------
@@ -179,13 +179,8 @@ export function DeskView() {
         </span>
         <button
           type="button"
+          className="lf-signout"
           onClick={() => void signOut()}
-          style={{
-            background: "none", border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 5,
-            color: "var(--mute)", fontSize: 11.5, fontWeight: 600,
-            fontFamily: "inherit", padding: "4px 6px", borderRadius: 7,
-          }}
           title="Sign out"
         >
           <LogOut size={13} /> Sign out
@@ -223,11 +218,7 @@ export function DeskView() {
           <Header>Front desk</Header>
           <div className="lf-console">
             <div className="lf-empty">
-              <p className="lf-empty-title">Office not recognized</p>
-              <p className="lf-empty-body">
-                The URL contains an unrecognized office ID. Check that the NFC
-                tag or link is current and points to a provisioned office.
-              </p>
+              <OfficeNotFound verbose />
             </div>
           </div>
         </section>
@@ -252,13 +243,8 @@ export function DeskView() {
               </p>
               <button
                 type="button"
+                className="lf-empty-action lf-empty-action--dark"
                 onClick={() => void signOut()}
-                style={{
-                  marginTop: 16, background: "var(--ink)", color: "#fff",
-                  border: "none", borderRadius: 10, padding: "10px 18px",
-                  fontFamily: "inherit", fontWeight: 600, fontSize: 13,
-                  cursor: "pointer", display: "flex", alignItems: "center", gap: 7,
-                }}
               >
                 <LogOut size={14} /> Sign out
               </button>
@@ -296,18 +282,7 @@ export function DeskView() {
             <div className="lf-empty">
               <div className="lf-empty-ring"><Wifi size={20} /></div>
               <p className="lf-empty-title">No check-ins yet</p>
-              <p
-                style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: "2.2rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  color: "var(--ink)",
-                  margin: "12px 0 4px",
-                }}
-              >
-                {displayCode}
-              </p>
+              <p className="lf-code-display">{displayCode}</p>
               <p className="lf-empty-body">
                 When a patient taps and approves, their info arrives here —
                 typed, legible, and structured. It travels end-to-end
@@ -331,29 +306,14 @@ export function DeskView() {
              * say [code]?" before any data is sent.
              */
             <div className="lf-empty">
-              <div className="lf-empty-ring" style={{ background: "#EAEDFB", borderColor: "#C4CCF4", color: "var(--cobalt)" }}>
+              <div className="lf-empty-ring lf-empty-ring--cobalt">
                 <ShieldCheck size={20} />
               </div>
               <p className="lf-empty-title">Patient connecting</p>
               <p className="lf-empty-body" style={{ marginBottom: 4 }}>
                 Ask the patient to compare their screen with this code:
               </p>
-              <p
-                style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: "2.4rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.2em",
-                  color: "var(--cobalt)",
-                  margin: "8px 0",
-                  background: "#EAEDFB",
-                  border: "2px solid #C4CCF4",
-                  borderRadius: 14,
-                  padding: "14px 24px",
-                }}
-              >
-                {displaySas}
-              </p>
+              <p className="lf-sas-box">{displaySas}</p>
               <p className="lf-empty-body">
                 If the codes match the patient will tap <strong>Confirm &amp; send</strong>.
                 A mismatch means the connection may be intercepted — ask the
@@ -383,22 +343,8 @@ export function DeskView() {
               </p>
               <button
                 type="button"
+                className="lf-empty-action lf-empty-action--cobalt"
                 onClick={handleNewSession}
-                style={{
-                  marginTop: 18,
-                  background: "var(--cobalt)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "10px 20px",
-                  fontFamily: "inherit",
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                }}
               >
                 <RotateCcw size={14} /> Start new session
               </button>
@@ -407,29 +353,15 @@ export function DeskView() {
 
           {step === "error" && (
             <div className="lf-empty">
-              <div className="lf-empty-ring" style={{ background: "#FEF2F2", borderColor: "#FECACA", color: "#DC2626" }}>
+              <div className="lf-empty-ring lf-empty-ring--error">
                 <ShieldAlert size={20} />
               </div>
               <p className="lf-empty-title">Session error</p>
               <p className="lf-empty-body">{errorMsg}</p>
               <button
                 type="button"
+                className="lf-empty-action lf-empty-action--dark"
                 onClick={handleNewSession}
-                style={{
-                  marginTop: 18,
-                  background: "var(--ink)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "10px 20px",
-                  fontFamily: "inherit",
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                }}
               >
                 <RotateCcw size={14} /> Start new session
               </button>

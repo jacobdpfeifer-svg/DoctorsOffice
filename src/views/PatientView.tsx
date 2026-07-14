@@ -35,6 +35,7 @@ import { Consent } from "../components/Consent.tsx";
 import { Done } from "../components/Done.tsx";
 import { PinEntry } from "../components/PinEntry.tsx";
 import { CodeEntry } from "../components/CodeEntry.tsx";
+import { OfficeNotFound } from "../components/OfficeNotFound.tsx";
 
 type Step =
   | "loading"       // initial IndexedDB check
@@ -283,6 +284,34 @@ export function PatientView() {
   };
 
   /**
+   * Maps technical Realtime/transit errors to friendly, actionable messages.
+   * The original technical detail is logged via console.warn so it remains
+   * visible to developers in DevTools without being surfaced to patients.
+   */
+  function friendlyTransitError(err: unknown): string {
+    const raw = err instanceof Error ? err.message : String(err);
+
+    // Messages already written for patients (from transit.ts) — pass through.
+    if (
+      raw.includes("session may have expired") ||
+      raw.includes("already in use") ||
+      raw.includes("interception")
+    ) {
+      return raw;
+    }
+
+    // Realtime channel status codes emitted by subscribeChannel in transit.ts.
+    if (/Realtime channel (CHANNEL_ERROR|TIMED_OUT|CLOSED)/i.test(raw)) {
+      console.warn("[carry] transit channel error:", raw);
+      return "Couldn't connect to the front desk. Check your internet connection and try again.";
+    }
+
+    // Unknown / generic error.
+    console.warn("[carry] transit error:", raw);
+    return "Something went wrong connecting to the front desk. Please try again.";
+  }
+
+  /**
    * Phase 1 of sending: join the desk session and derive the shared key + SAS.
    * Shows the spinner, then transitions to "sas-confirm" where the user
    * visually verifies the SAS before any data is sent.
@@ -305,7 +334,7 @@ export function PatientView() {
         endSession(sessionRef.current.channel);
         sessionRef.current = null;
       }
-      setSendError(err instanceof Error ? err.message : String(err));
+      setSendError(friendlyTransitError(err));
       setStep("code-entry");
     }
   };
@@ -371,7 +400,7 @@ export function PatientView() {
         // Genuine send failure (channel error, etc.) — safe to retry.
         // PHI is NOT wiped here: the packet was never sent, so the user
         // should be able to retry with the same consentedPacket.
-        setSendError(err instanceof Error ? err.message : String(err));
+        setSendError(friendlyTransitError(err));
         setStep("code-entry");
       }
     }
@@ -412,7 +441,7 @@ export function PatientView() {
           <div className="lf-notch" />
           <div className="lf-screen">
             <div className="lf-pad lf-center">
-              <p>Office not recognized</p>
+              <OfficeNotFound />
             </div>
           </div>
         </div>
@@ -430,7 +459,7 @@ export function PatientView() {
 
           {step === "loading" && (
             <div className="lf-pad lf-center">
-              <p style={{ color: "var(--mute)", fontSize: "13px" }}>Loading…</p>
+              <p className="lf-note">Loading…</p>
             </div>
           )}
 
@@ -518,11 +547,7 @@ export function PatientView() {
           {step === "sas-confirm" && (
             <div className="lf-pad lf-scroll">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: "50%",
-                  background: "#EAEDFB", display: "grid", placeItems: "center",
-                  color: "var(--cobalt)", flexShrink: 0,
-                }}>
+                <div className="lf-verify-icon">
                   <ShieldCheck size={16} />
                 </div>
                 <h3 className="lf-h-solo" style={{ margin: 0 }}>Verify connection</h3>
@@ -533,29 +558,13 @@ export function PatientView() {
                 screen. They must match exactly.
               </p>
 
-              <div style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: "2.4rem",
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-                color: "var(--cobalt)",
-                background: "#EAEDFB",
-                border: "2px solid #C4CCF4",
-                borderRadius: 14,
-                padding: "16px",
-                textAlign: "center",
-                margin: "12px 0 14px",
-              }}>
+              <div className="lf-sas-box">
                 {sas.slice(0, 3)}&nbsp;{sas.slice(3)}
               </div>
 
-              <div style={{
-                display: "flex", alignItems: "flex-start", gap: 8,
-                background: "#FEF9EC", border: "1px solid #FDE68A",
-                borderRadius: 10, padding: "10px 12px", marginBottom: 14,
-              }}>
-                <ShieldAlert size={14} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
-                <p style={{ margin: 0, fontSize: 11.5, color: "#78350F", lineHeight: 1.5 }}>
+              <div className="lf-warn-box">
+                <ShieldAlert size={14} />
+                <p className="lf-warn-box-text">
                   If the codes don't match, tap <strong>Don't match</strong>.
                   Do not send — a mismatch can indicate an interception attempt.
                 </p>
@@ -594,31 +603,20 @@ export function PatientView() {
            */}
           {step === "unconfirmed" && (
             <div className="lf-pad lf-center" style={{ gap: 12 }}>
-              <div style={{
-                width: 52, height: 52, borderRadius: "50%",
-                background: "#FEF9EC", border: "2px solid #FDE68A",
-                display: "grid", placeItems: "center",
-                color: "#B45309", flexShrink: 0,
-              }}>
+              <div className="lf-warn-ring">
                 <ShieldAlert size={22} />
               </div>
 
-              <p style={{ fontWeight: 700, fontSize: 16, textAlign: "center", margin: 0 }}>
-                Sent — confirmation pending
-              </p>
+              <p className="lf-warn-title">Sent — confirmation pending</p>
 
-              <p style={{ fontSize: 13, color: "var(--mute)", textAlign: "center",
-                lineHeight: 1.55, margin: 0, maxWidth: 280 }}>
+              <p className="lf-warn-body">
                 Your information was transmitted, but the front desk did not
                 send a confirmation in time. This usually means the connection
                 was interrupted after delivery.
               </p>
 
-              <div style={{
-                background: "#FEF9EC", border: "1px solid #FDE68A",
-                borderRadius: 10, padding: "10px 14px", maxWidth: 280,
-              }}>
-                <p style={{ margin: 0, fontSize: 12, color: "#78350F", lineHeight: 1.5 }}>
+              <div className="lf-warn-note">
+                <p>
                   Please let the receptionist know you've submitted your
                   information. Do not tap-to-start again — a second submission
                   will show an error because the session is already used.

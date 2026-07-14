@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock } from "lucide-react";
+import { AlertCircle, Lock } from "lucide-react";
 
 interface Props {
   title: string;
@@ -41,9 +41,10 @@ export function PinEntry({
       <p className="lf-note">{subtitle}</p>
 
       {error && (
-        <p style={{ color: "var(--clay)", fontSize: "13px", fontWeight: 600, margin: "0 0 12px" }}>
+        <div id="pin-error" className="lf-field-error" role="alert">
+          <AlertCircle size={14} aria-hidden="true" />
           {error}
-        </p>
+        </div>
       )}
 
       <label className="lf-field">
@@ -61,6 +62,8 @@ export function PinEntry({
           autoCapitalize="off"
           spellCheck={false}
           disabled={isLoading}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "pin-error" : undefined}
           style={{ letterSpacing: "0.2em", fontSize: "20px", textAlign: "center" }}
         />
       </label>

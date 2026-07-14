@@ -190,10 +190,13 @@ export function LoginView() {
               Sign in to access your office's front desk.
             </p>
 
-            <div className="auth-tabs">
+            {/* role="tablist" labels the two mode-select buttons as a group */}
+            <div className="auth-tabs" role="tablist" aria-label="Sign-in method">
               <button
                 type="button"
                 className="auth-tab"
+                role="tab"
+                aria-selected={mode === "magic"}
                 data-active={mode === "magic" ? "true" : "false"}
                 onClick={() => { setMode("magic"); setError(""); }}
               >
@@ -202,6 +205,8 @@ export function LoginView() {
               <button
                 type="button"
                 className="auth-tab"
+                role="tab"
+                aria-selected={mode === "password"}
                 data-active={mode === "password" ? "true" : "false"}
                 onClick={() => { setMode("password"); setError(""); }}
               >
@@ -209,8 +214,9 @@ export function LoginView() {
               </button>
             </div>
 
+            {/* role="alert" announces the error to screen readers as soon as it appears */}
             {error && (
-              <div className="auth-err">
+              <div id="auth-err" className="auth-err" role="alert">
                 <span>{error}</span>
               </div>
             )}
@@ -219,7 +225,7 @@ export function LoginView() {
               <div className="auth-field">
                 <label htmlFor="auth-email">Email address</label>
                 <div className="auth-input-wrap">
-                  <Mail size={15} />
+                  <Mail size={15} aria-hidden="true" />
                   <input
                     id="auth-email"
                     type="email"
@@ -228,6 +234,8 @@ export function LoginView() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@clinic.com"
                     autoComplete="email"
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby={error ? "auth-err" : undefined}
                     required
                   />
                 </div>
@@ -237,7 +245,7 @@ export function LoginView() {
                 <div className="auth-field">
                   <label htmlFor="auth-password">Password</label>
                   <div className="auth-input-wrap">
-                    <Lock size={15} />
+                    <Lock size={15} aria-hidden="true" />
                     <input
                       id="auth-password"
                       type="password"
@@ -246,6 +254,8 @@ export function LoginView() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       autoComplete="current-password"
+                      aria-invalid={error ? true : undefined}
+                      aria-describedby={error ? "auth-err" : undefined}
                       required
                     />
                   </div>
@@ -262,13 +272,14 @@ export function LoginView() {
                 type="submit"
                 className="auth-btn auth-btn-cobalt"
                 disabled={formState === "submitting"}
+                aria-busy={formState === "submitting"}
               >
                 {formState === "submitting" ? (
                   "Signing in…"
                 ) : mode === "magic" ? (
-                  <>Send magic link <ArrowRight size={15} /></>
+                  <>Send magic link <ArrowRight size={15} aria-hidden="true" /></>
                 ) : (
-                  <>Sign in <ArrowRight size={15} /></>
+                  <>Sign in <ArrowRight size={15} aria-hidden="true" /></>
                 )}
               </button>
             </form>

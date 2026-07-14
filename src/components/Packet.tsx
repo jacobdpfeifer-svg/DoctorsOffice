@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Check, Copy, Lock } from "lucide-react";
-import type { ConsentedPacket } from "../lib/types.ts";
+import type { ConsentedPacket, Profile } from "../lib/types.ts";
 import { CATEGORIES, LABELS } from "./constants.ts";
-import type { Profile } from "../lib/types.ts";
 
 interface Props {
   packet: ConsentedPacket;

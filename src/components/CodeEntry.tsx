@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap } from "lucide-react";
+import { AlertCircle, Zap } from "lucide-react";
 
 interface Props {
   error?: string;
@@ -42,9 +42,10 @@ export function CodeEntry({ error, onSubmit, onBack }: Props) {
       </p>
 
       {error && (
-        <p style={{ color: "var(--clay)", fontSize: "13px", fontWeight: 600, margin: "0 0 12px" }}>
+        <div id="code-error" className="lf-field-error" role="alert">
+          <AlertCircle size={14} aria-hidden="true" />
           {error}
-        </p>
+        </div>
       )}
 
       <label className="lf-field">
@@ -62,6 +63,8 @@ export function CodeEntry({ error, onSubmit, onBack }: Props) {
           autoCorrect="off"
           autoComplete="off"
           spellCheck={false}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "code-error" : undefined}
           style={{
             fontFamily: "'IBM Plex Mono', monospace",
             letterSpacing: "0.35em",
